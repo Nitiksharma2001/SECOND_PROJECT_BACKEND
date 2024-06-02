@@ -1,10 +1,12 @@
 import Product from '../db/Product.js'
 
 export default class ProductService {
-
-  async getAllProducts(){
+  constructor(){
+    this.Product = new Product()
+  }
+  getAllProducts = async () => {
     try {
-      const result = await Product.getAllProducts()
+      const result = await this.Product.getAllProducts()
       return { status: 200, data: result, message: `All Product Fetched` }
     } catch (err) {
       throw {
@@ -15,9 +17,9 @@ export default class ProductService {
     }
   }
 
-  async getProductFromId (productId){
+  getProductFromId = async (productId) => {
     try {
-      const result = await Product.getProductFromId(productId)
+      const result = await this.Product.getProductFromId(productId)
       return {
         status: 200,
         data: result,
@@ -32,5 +34,3 @@ export default class ProductService {
     }
   }
 }
-
-

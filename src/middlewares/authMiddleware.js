@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import Auth from '../db/Auth.js'
 
 export const authMiddleWare = async (req, res, next) => {
+  const authDb = new Auth()
   try {
     const token = req.headers.authorization.slice(7)
     if (!token) {
@@ -11,7 +12,7 @@ export const authMiddleWare = async (req, res, next) => {
     if (!user._id) {
       return res.status(401).json({ message: 'UnAuthorized User', data: null })
     }
-    const checkUser = await Auth.findUserFromCred({
+    const checkUser = await authDb.findUserFromCred({
       _id: user._id,
     })
     if (!checkUser) {

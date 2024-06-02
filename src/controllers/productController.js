@@ -1,14 +1,11 @@
 import ProductService from '../services/productService.js'
 
 export default class ProductController {
-  constructor(){
+  constructor() {
     this.productService = new ProductService()
-
-    this.getAllProducts =  this.getAllProducts.bind(this)
-    this.getProductFromId = this.getProductFromId.bind(this)
   }
 
-  async getAllProducts (req, res) {
+  getAllProducts = async (req, res) => {
     const { status, message, data } = await this.productService.getAllProducts()
     return res.status(status).json({
       message,
@@ -16,11 +13,10 @@ export default class ProductController {
     })
   }
 
-  async getProductFromId (req, res) {
+  getProductFromId = async (req, res) => {
     const productId = req.params.productId
-    const { status, message, data } = await this.productService.getProductFromId(
-      productId
-    )
+    const { status, message, data } =
+      await this.productService.getProductFromId(productId)
     return res.status(status).json({
       message,
       data,
