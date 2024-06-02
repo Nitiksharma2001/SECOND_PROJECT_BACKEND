@@ -1,10 +1,11 @@
+import { controllerAsyncHandler } from '../helper/asyncHandler.js'
 import CartService from '../services/cartService.js'
 
 export default class CartController {
   constructor() {
     this.cartService = new CartService()
   }
-  getCart = async (req, res) => {
+  getCart = controllerAsyncHandler(async (req, res) => {
     const { status, message, data } = await this.cartService.getCart(
       req.user._id
     )
@@ -12,8 +13,8 @@ export default class CartController {
       message,
       data,
     })
-  }
-  addProductToCart = async (req, res) => {
+  })
+  addProductToCart = controllerAsyncHandler(async (req, res) => {
     const { productId } = req.params
     const { status, message, data } = await this.cartService.addProductToCart(
       req.user._id,
@@ -23,8 +24,8 @@ export default class CartController {
       message,
       data,
     })
-  }
-  deleteProductFromCart = async (req, res) => {
+  })
+  deleteProductFromCart = controllerAsyncHandler(async (req, res) => {
     const { productId } = req.params
     const { status, message, data } =
       await this.cartService.deleteProductFromCart(req.user._id, productId)
@@ -32,5 +33,5 @@ export default class CartController {
       message,
       data,
     })
-  }
+  })
 }

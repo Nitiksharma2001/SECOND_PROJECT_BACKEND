@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import Auth from '../db/Auth.js'
 import jwt from 'jsonwebtoken'
+import { asyncHandler } from '../helper/asyncHandler.js'
 
 export default class AuthService {
   constructor(HASHING_SALT_ROUNDS) {
@@ -8,64 +9,48 @@ export default class AuthService {
     this.HASHING_SALT_ROUNDS = HASHING_SALT_ROUNDS
   }
 
-  createNewUser = async (userDetails) => {
-    try {
-      const user = await this.Auth.findUserFromCred({
-        email: userDetails.email,
-      })
-      if (user) {
-        return { status: 400, message: 'User Already Existed', data: null }
-      }
-      const hashedPassword = await bcrypt.hash(
-        userDetails.password,
-        this.HASHING_SALT_ROUNDS
-      )
-      const newUser = await this.Auth.createNewUser({
-        ...userDetails,
-        password: hashedPassword,
-      })
-      return { status: 200, data: newUser, message: 'User Created' }
-    } catch (err) {
-      throw {
+  createNewUser = asyncHandler(async (userDetails) => {
+    const user = await this.Auth.findUserFromCred({
+      email: userDetails.email,
+    })
+    if (user) {
+      return { status: 400, message: 'User Already Existed', data: null }
+    }
+    const hashedPassword = await bcrypt.hash(
+      userDetails.password,
+      this.HASHING_SALT_ROUNDS
+    )
+    const newUser = await this.Auth.createNewUser({
+      ...userDetails,
+      password: hashedPassword,
+    })
+    return { status: 200, data: newUser, message: 'User Created' }
+  })
+  loginUser = asyncHandler(async (loginDetails) => {
+    const user = await this.Auth.findUserFromCred({
+      email: loginDetails.email,
+    })
+    if (!user) {
+      return {
         status: 400,
-        message: err.message,
+        message: 'Invalid Email or Password',
         data: null,
       }
     }
-  }
-  loginUser = async (loginDetails) => {
-    try {
-      const user = await this.Auth.findUserFromCred({
-        email: loginDetails.email,
-      })
-      if (!user) {
-        return {
-          status: 400,
-          message: 'Invalid Email or Password',
-          data: null,
-        }
-      }
-      const result = await bcrypt.compare(loginDetails.password, user.password)
-      if (!result) {
-        return {
-          status: 400,
-          message: 'Invalid Email or Password',
-          data: null,
-        }
-      }
-      const { _id, name, email } = user
-      const token = jwt.sign({ _id, name, email }, process.env.JWT_KEY)
-      return {
-        status: 200,
-        message: 'Sucessfully Logged In',
-        data: { _id, name, email, token },
-      }
-    } catch (err) {
+    const result = await bcrypt.compare(loginDetails.password, user.password)
+    if (!result) {
       return {
         status: 400,
-        message: err.message,
+        message: 'Invalid Email or Password',
         data: null,
       }
     }
-  }
+    const { _id, name, email } = user
+    const token = jwt.sign({ _id, name, email }, process.env.JWT_KEY)
+    return {
+      status: 200,
+      message: 'Sucessfully Logged In',
+      data: { _id, name, email, token },
+    }
+  })
 }

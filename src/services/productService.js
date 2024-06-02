@@ -1,36 +1,21 @@
 import Product from '../db/Product.js'
+import { asyncHandler } from '../helper/asyncHandler.js'
 
 export default class ProductService {
-  constructor(){
+  constructor() {
     this.Product = new Product()
   }
-  getAllProducts = async () => {
-    try {
-      const result = await this.Product.getAllProducts()
-      return { status: 200, data: result, message: `All Product Fetched` }
-    } catch (err) {
-      throw {
-        status: 400,
-        message: err.message,
-        data: null,
-      }
-    }
-  }
+  getAllProducts = asyncHandler(async () => {
+    const result = await this.Product.getAllProducts()
+    return { status: 200, data: result, message: `All Product Fetched` }
+  })
 
-  getProductFromId = async (productId) => {
-    try {
-      const result = await this.Product.getProductFromId(productId)
-      return {
-        status: 200,
-        data: result,
-        message: `Product Fetched with Id ${productId}`,
-      }
-    } catch (err) {
-      throw {
-        status: 400,
-        message: err.message,
-        data: null,
-      }
+  getProductFromId = asyncHandler(async (productId) => {
+    const result = await this.Product.getProductFromId(productId)
+    return {
+      status: 200,
+      data: result,
+      message: `Product Fetched with Id ${productId}`,
     }
-  }
+  })
 }

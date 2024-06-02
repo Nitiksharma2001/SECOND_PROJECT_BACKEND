@@ -1,3 +1,4 @@
+import { controllerAsyncHandler } from '../helper/asyncHandler.js'
 import ProductService from '../services/productService.js'
 
 export default class ProductController {
@@ -5,15 +6,15 @@ export default class ProductController {
     this.productService = new ProductService()
   }
 
-  getAllProducts = async (req, res) => {
+  getAllProducts = controllerAsyncHandler(async (req, res) => {
     const { status, message, data } = await this.productService.getAllProducts()
     return res.status(status).json({
       message,
       data,
     })
-  }
+  })
 
-  getProductFromId = async (req, res) => {
+  getProductFromId = controllerAsyncHandler(async (req, res) => {
     const productId = req.params.productId
     const { status, message, data } =
       await this.productService.getProductFromId(productId)
@@ -21,5 +22,5 @@ export default class ProductController {
       message,
       data,
     })
-  }
+  })
 }
