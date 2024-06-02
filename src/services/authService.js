@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import Auth from '../db/Auth.js'
 import jwt from 'jsonwebtoken'
 import { asyncHandler } from '../helper/asyncHandler.js'
+import { httpCodes } from '../utils/httpCodes.js'
 
 export default class AuthService {
   constructor(HASHING_SALT_ROUNDS) {
@@ -14,7 +15,11 @@ export default class AuthService {
       email: userDetails.email,
     })
     if (user) {
-      return { status: 400, message: 'User Already Existed', data: null }
+      return {
+        status: httpCodes.NO_CONTENT,
+        message: 'User Already Existed',
+        data: null,
+      }
     }
     const hashedPassword = await bcrypt.hash(
       userDetails.password,
@@ -24,7 +29,7 @@ export default class AuthService {
       ...userDetails,
       password: hashedPassword,
     })
-    return { status: 200, data: newUser, message: 'User Created' }
+    return { status: httpCodes.CREATED, data: newUser, message: 'User Created' }
   })
   loginUser = asyncHandler(async (loginDetails) => {
     const user = await this.Auth.findUserFromCred({
@@ -32,7 +37,7 @@ export default class AuthService {
     })
     if (!user) {
       return {
-        status: 400,
+        status: httpCodes.UNAUTHORIZED,
         message: 'Invalid Email or Password',
         data: null,
       }
@@ -40,7 +45,7 @@ export default class AuthService {
     const result = await bcrypt.compare(loginDetails.password, user.password)
     if (!result) {
       return {
-        status: 400,
+        status: httpCodes.UNAUTHORIZED,
         message: 'Invalid Email or Password',
         data: null,
       }
@@ -48,7 +53,7 @@ export default class AuthService {
     const { _id, name, email } = user
     const token = jwt.sign({ _id, name, email }, process.env.JWT_KEY)
     return {
-      status: 200,
+      status: httpCodes.RESPONSE_OK,
       message: 'Sucessfully Logged In',
       data: { _id, name, email, token },
     }

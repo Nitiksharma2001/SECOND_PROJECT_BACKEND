@@ -1,6 +1,6 @@
 import { controllerAsyncHandler } from '../helper/asyncHandler.js'
 import AuthService from '../services/authService.js'
-
+import { httpCodes } from '../utils/httpCodes.js'
 export default class AuthController {
   constructor() {
     this.authService = new AuthService(6)
@@ -8,7 +8,7 @@ export default class AuthController {
   createNewUser = controllerAsyncHandler(async (req, res) => {
     const userDetails = req.body
     if (!userDetails.name || !userDetails.email || !userDetails.password) {
-      return res.status(400).json({ message: 'incomplete details', data: null })
+      return res.status(httpCodes.BAD_REQUEST).json({ message: 'incomplete details', data: null })
     }
     const { status, message, data } = await this.authService.createNewUser(
       userDetails
@@ -24,7 +24,7 @@ export default class AuthController {
       password: req.query.password,
     }
     if (!loginDetails.email || !loginDetails.password) {
-      return res.status(400).json({ status: 200 })
+      return res.status(httpCodes.BAD_REQUEST).json({ message: 'incomplete details', data: null })
     }
     const { status, message, data } = await this.authService.loginUser(
       loginDetails

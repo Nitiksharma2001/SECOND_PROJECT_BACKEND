@@ -29,9 +29,9 @@ export default class CartController {
     const { productId } = req.params
     const { status, message, data } =
       await this.cartService.deleteProductFromCart(req.user._id, productId)
-    return res.status(status).json({
-      message,
-      data,
-    })
+      return res.status(status).json({
+        message,
+        data,
+      })
   })
 }
