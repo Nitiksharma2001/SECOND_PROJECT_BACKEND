@@ -8,15 +8,21 @@ export default class ProductService {
   }
   getAllProducts = asyncHandler(async () => {
     const result = await this.Product.getAllProducts()
-    return { status: httpCodes.ACCEPTED, data: result, message: `All Product Fetched` }
+    return {
+      status: httpCodes.RESPONSE_OK,
+      data: result,
+      message: `All Product Fetched`,
+      success: true,
+    }
   })
 
   getProductFromId = asyncHandler(async (productId) => {
     const result = await this.Product.getProductFromId(productId)
     return {
-      status: httpCodes.ACCEPTED,
+      status: httpCodes.RESPONSE_OK,
       data: result,
       message: `Product Fetched with Id ${productId}`,
+      success: true,
     }
   })
 }

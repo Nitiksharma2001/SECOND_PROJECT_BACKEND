@@ -8,10 +8,11 @@ export default class ProductController {
   }
 
   getAllProducts = controllerAsyncHandler(async (req, res) => {
-    const { status, message, data } = await this.productService.getAllProducts()
+    const { status, message, success, data } = await this.productService.getAllProducts()
     return res.status(status).json({
       message,
       data,
+      success
     })
   })
 
@@ -22,11 +23,12 @@ export default class ProductController {
         .status(httpCodes.BAD_REQUEST)
         .json({ message, success, data: null })
     }
-    const { status, message, data } =
+    const { status, message, success, data } =
       await this.productService.getProductFromId(productId)
       return res.status(status).json({
         message,
         data,
+        success
       })
   })
 }

@@ -10,14 +10,15 @@ export default class AuthController {
     if (!userDetails.name || !userDetails.email || !userDetails.password) {
       return res.status(httpCodes.BAD_REQUEST).json({ message: 'incomplete details', data: null })
     }
-    const { status, message, data } = await this.authService.createNewUser(
-      userDetails
-    )
+    const { status, message, success, data } = await this.authService.createNewUser( userDetails )
+    console.log(status, message, success, data)
     return res.status(status).json({
       message,
       data,
+      success
     })
   })
+  
   loginUser = controllerAsyncHandler(async (req, res) => {
     const loginDetails = {
       email: req.query.email,
@@ -26,12 +27,13 @@ export default class AuthController {
     if (!loginDetails.email || !loginDetails.password) {
       return res.status(httpCodes.BAD_REQUEST).json({ message: 'incomplete details', data: null })
     }
-    const { status, message, data } = await this.authService.loginUser(
+    const { status, message, success, data } = await this.authService.loginUser(
       loginDetails
     )
     return res.status(status).json({
       message,
       data,
+      success
     })
   })
 }

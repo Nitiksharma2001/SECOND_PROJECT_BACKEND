@@ -16,9 +16,10 @@ export default class AuthService {
     })
     if (user) {
       return {
-        status: httpCodes.NO_CONTENT,
+        status: httpCodes.BAD_REQUEST,
         message: 'User Already Existed',
         data: null,
+        success: false
       }
     }
     const hashedPassword = await bcrypt.hash(
@@ -29,7 +30,7 @@ export default class AuthService {
       ...userDetails,
       password: hashedPassword,
     })
-    return { status: httpCodes.CREATED, data: newUser, message: 'User Created' }
+    return { status: httpCodes.CREATED, data: newUser, message: 'User Created', success: true }
   })
   loginUser = asyncHandler(async (loginDetails) => {
     const user = await this.Auth.findUserFromCred({
@@ -40,6 +41,7 @@ export default class AuthService {
         status: httpCodes.UNAUTHORIZED,
         message: 'Invalid Email or Password',
         data: null,
+        success: false
       }
     }
     const result = await bcrypt.compare(loginDetails.password, user.password)
@@ -48,6 +50,7 @@ export default class AuthService {
         status: httpCodes.UNAUTHORIZED,
         message: 'Invalid Email or Password',
         data: null,
+        success: false
       }
     }
     const { _id, name, email } = user
@@ -56,6 +59,7 @@ export default class AuthService {
       status: httpCodes.RESPONSE_OK,
       message: 'Sucessfully Logged In',
       data: { _id, name, email, token },
+      success: true
     }
   })
 }
